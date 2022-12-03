@@ -334,8 +334,8 @@ class CornersProblem(search.SearchProblem):
             x, y = state[0][:]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            sttCorners = state[1][:]
             hitsWall = self.walls[nextx][nexty]
+            sttCorners = state[1][:]
 
             if not hitsWall:
                 nextPos = (nextx, nexty)
@@ -386,7 +386,9 @@ def cornersHeuristic(state, problem):
 
     distanceGoal = []
     for idx, sttCorner in enumerate(sttCorners):
-        if sttCorner == False:
+        if sttCorner == True:
+            continue
+        else: 
             dis = util.manhattanDistance(curPos, corners[idx])
             distanceGoal.append(dis)
     h = max(distanceGoal)

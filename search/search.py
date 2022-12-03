@@ -87,124 +87,121 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    from util import Stack
 
-    open_list = Stack()
+    listStack = util.Stack()
 
-    visited_list = []
+    visited = []
     path = []
-    action_cost = 0
+    actionCost = 0
 
-    start_position = problem.getStartState()
+    startPos = problem.getStartState()
 
-    open_list.push((start_position, path, action_cost))
+    listStack.push((startPos, path, actionCost))
 
-    while not open_list.isEmpty():
+    while not listStack.isEmpty():
 
-        current_node = open_list.pop()
-        position = current_node[0]
-        path = current_node[1]
+        currentNode = listStack.pop()
+        path = currentNode[1]
+        pos = currentNode[0]
 
-        if position not in visited_list:
-            visited_list.append(position)
+        if pos not in visited:
+            visited.append(pos)
 
-        if problem.isGoalState(position):
+        if problem.isGoalState(pos):
             return path
 
-        successors = problem.getSuccessors(position)
+        successors = problem.getSuccessors(pos)
 
-        for item in successors:
-            if item[0] not in visited_list:
+        for successor in successors:
+            if successor[0] not in visited:
 
-                new_position = item[0]
-                new_path = path + [item[1]]
-                open_list.push((new_position, new_path, item[2]))
+                newPos = successor[0]
+                newPath = path + [successor[1]]
+                listStack.push((newPos, newPath, successor[2]))
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    from util import Queue
 
-    open_list = Queue()
+    listQueue = util.Queue()
 
-    visited_list = []
+    visited = []
     path = []
-    action_cost = 0 
+    actionCost = 0 
 
-    start_position = problem.getStartState()
+    startPos = problem.getStartState()
 
-    open_list.push((start_position, path, action_cost))
+    listQueue.push((startPos, path, actionCost))
 
-    while not open_list.isEmpty():
+    while not listQueue.isEmpty():
 
-        current_node = open_list.pop()
-        position = current_node[0]
-        path = current_node[1]
+        currentNode = listQueue.pop()
+        path = currentNode[1]
+        pos = currentNode[0]
 
-        if position not in visited_list:
-            visited_list.append(position)
+        if pos not in visited:
+            visited.append(pos)
 
-        if problem.isGoalState(position):
+        if problem.isGoalState(pos):
             return path
 
-        successors = problem.getSuccessors(position)
+        successors = problem.getSuccessors(pos)
 
-        for item in successors:
-            if item[0] not in visited_list and item[0] not in (node[0] for node in open_list.list):
+        for successor in successors:
+            if successor[0] not in visited and successor[0] not in (node[0] for node in listQueue.list):
 
-                new_position = item[0]
-                new_path = path + [item[1]]
-                open_list.push((new_position, new_path, item[2]))
+                newPos = successor[0]
+                newPath = path + [successor[1]]
+                listQueue.push((newPos, newPath, successor[2]))
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    from util import PriorityQueue
 
-    open_list = PriorityQueue()
+    listPriorityQueue = util.PriorityQueue()
 
-    visited_list = []
+    visited = []
     path = []
     priority = 0
 
-    start_position = problem.getStartState()
+    startPos = problem.getStartState()
 
-    open_list.push((start_position, path), priority)
+    listPriorityQueue.push((startPos, path), priority)
 
-    while not open_list.isEmpty():
+    while not listPriorityQueue.isEmpty():
 
-        current_node = open_list.pop()
-        position = current_node[0]
-        path = current_node[1]
+        currentNode = listPriorityQueue.pop()
+        path = currentNode[1]
+        pos = currentNode[0]
 
-        if position not in visited_list:
-            visited_list.append(position)
+        if pos not in visited:
+            visited.append(pos)
 
-        if problem.isGoalState(position):
+        if problem.isGoalState(pos):
             return path
 
-        successors = problem.getSuccessors(position)
+        successors = problem.getSuccessors(pos)
 
         def getPriorityOfNode(priority_queue, node):
             for item in priority_queue.heap:
                 if item[2][0] == node:
                     return problem.getCostOfActions(item[2][1])
 
-        for item in successors:
-            if item[0] not in visited_list and (item[0] not in (node[2][0] for node in open_list.heap)):
-                new_path = path + [item[1]]
+        for successor in successors:
+            if successor[0] not in visited and (successor[0] not in (node[2][0] for node in listPriorityQueue.heap)):
+                new_path = path + [successor[1]]
                 new_priority = problem.getCostOfActions(new_path)
-                open_list.push((item[0], new_path), new_priority)
+                listPriorityQueue.push((successor[0], new_path), new_priority)
 
-            elif item[0] not in visited_list and (item[0] in (node[2][0] for node in open_list.heap)):
-                old_priority = getPriorityOfNode(open_list, item[0])
+            elif successor[0] not in visited and (successor[0] in (node[2][0] for node in listPriorityQueue.heap)):
+                old_priority = getPriorityOfNode(listPriorityQueue, successor[0])
                 new_priority = problem.getCostOfActions(new_path)
 
                 if old_priority > new_priority:
-                    new_path = path + [item[1]]
-                    open_list.update((item[0], new_path), new_priority)
+                    new_path = path + [successor[1]]
+                    listPriorityQueue.update((successor[0], new_path), new_priority)
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):

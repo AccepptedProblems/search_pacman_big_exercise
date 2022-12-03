@@ -288,6 +288,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.sttCorners = [False, False, False, False]
+        self.startPos = self.startingPosition
 
     def getStartState(self):
         """
@@ -295,14 +297,18 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startPos, self.sttCorners)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        sttCorners = [sttCorner for sttCorner in state[1]]
+        if sttCorners[0] == True and sttCorners[1] == True and sttCorners[2] == True and sttCorners[3] == True:
+            return True
+
+        return False
 
     def getSuccessors(self, state):
         """
@@ -325,6 +331,18 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            x, y = state[0][:]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            sttCorners = state[1][:]
+            hitsWall = self.walls[nextx][nexty]
+
+            if not hitsWall:
+                nextPos = (nextx, nexty)
+                if nextPos in self.corners:
+                    sttCorners[self.corners.index(nextPos)] = True
+                nextState = (nextPos, sttCorners)
+                successors.append((nextState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -360,10 +378,22 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    h = 0   
+    curPos = state[0]
+    sttCorners = state[1]
+    if problem.isGoalState(state):
+        return h
+
+    distanceGoal = []
+    for idx, sttCorner in enumerate(sttCorners):
+        if sttCorner == False:
+            dis = util.manhattanDistance(curPos, corners[idx])
+            distanceGoal.append(dis)
+    h = max(distanceGoal)
+    return h
 
 class AStarCornersAgent(SearchAgent):
-    "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
+    "A SearchAgent for FoodSearchProblem using A* and your foodh"
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
         self.searchType = CornersProblem

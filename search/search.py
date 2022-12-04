@@ -92,17 +92,16 @@ def depthFirstSearch(problem):
 
     visited = []
     path = []
-    actionCost = 0
 
     startPos = problem.getStartState()
 
-    listStack.push((startPos, path, actionCost))
+    listStack.push((startPos, path, 0))
 
     while not listStack.isEmpty():
 
-        currentNode = listStack.pop()
-        path = currentNode[1]
-        pos = currentNode[0]
+        curNode = listStack.pop()
+        path = curNode[1]
+        pos = curNode[0]
 
         if pos not in visited:
             visited.append(pos)
@@ -128,17 +127,16 @@ def breadthFirstSearch(problem):
 
     visited = []
     path = []
-    actionCost = 0 
 
     startPos = problem.getStartState()
 
-    listQueue.push((startPos, path, actionCost))
+    listQueue.push((startPos, path, 0))
 
     while not listQueue.isEmpty():
 
-        currentNode = listQueue.pop()
-        path = currentNode[1]
-        pos = currentNode[0]
+        curNode = listQueue.pop()
+        path = curNode[1]
+        pos = curNode[0]
 
         if pos not in visited:
             visited.append(pos)
@@ -149,8 +147,9 @@ def breadthFirstSearch(problem):
         successors = problem.getSuccessors(pos)
 
         for successor in successors:
-            if successor[0] not in visited and successor[0] not in (node[0] for node in listQueue.list):
-
+            if successor[0] in visited or successor[0] in (node[0] for node in listQueue.list):
+                continue
+            else:
                 newPos = successor[0]
                 newPath = path + [successor[1]]
                 listQueue.push((newPos, newPath, successor[2]))
@@ -160,21 +159,16 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
 
-    listPriorityQueue = util.PriorityQueue()
-
+    pQueue = util.PriorityQueue()
     visited = []
     path = []
-    priority = 0
-
     startPos = problem.getStartState()
+    pQueue.push((startPos, path), 0)
 
-    listPriorityQueue.push((startPos, path), priority)
-
-    while not listPriorityQueue.isEmpty():
-
-        currentNode = listPriorityQueue.pop()
-        path = currentNode[1]
-        pos = currentNode[0]
+    while not pQueue.isEmpty():
+        curNode = pQueue.pop()
+        path = curNode[1]
+        pos = curNode[0]
 
         if pos not in visited:
             visited.append(pos)
@@ -190,18 +184,18 @@ def uniformCostSearch(problem):
                     return problem.getCostOfActions(item[2][1])
 
         for successor in successors:
-            if successor[0] not in visited and (successor[0] not in (node[2][0] for node in listPriorityQueue.heap)):
+            if successor[0] not in visited and (successor[0] not in (node[2][0] for node in pQueue.heap)):
                 new_path = path + [successor[1]]
                 new_priority = problem.getCostOfActions(new_path)
-                listPriorityQueue.push((successor[0], new_path), new_priority)
+                pQueue.push((successor[0], new_path), new_priority)
 
-            elif successor[0] not in visited and (successor[0] in (node[2][0] for node in listPriorityQueue.heap)):
-                old_priority = getPriorityOfNode(listPriorityQueue, successor[0])
+            elif successor[0] not in visited and (successor[0] in (node[2][0] for node in pQueue.heap)):
+                old_priority = getPriorityOfNode(pQueue, successor[0])
                 new_priority = problem.getCostOfActions(new_path)
 
                 if old_priority > new_priority:
                     new_path = path + [successor[1]]
-                    listPriorityQueue.update((successor[0], new_path), new_priority)
+                    pQueue.update((successor[0], new_path), new_priority)
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):

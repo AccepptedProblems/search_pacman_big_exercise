@@ -565,6 +565,15 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
+        foods = self.food.asList() 
+        
+        result = False 
+        
+        for (x1, y1) in foods:
+            if(x == x1 and y == y1):
+                result = True 
+        
+        return result
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):

@@ -80,6 +80,8 @@ class ReflexAgent(Agent):
         if successorGameState.isWin():
             return 10000000
 
+        heurictic = successorGameState.getScore()
+
         closestFoodDistance = 100000
 
         if len(foodList) == 0:
@@ -89,7 +91,7 @@ class ReflexAgent(Agent):
             distance = manhattanDistance(newPos, foodPosition)
             if distance < closestFoodDistance:
                 closestFoodDistance = distance
-        
+
 
         closestGostDistance = 1000000
         idxGostClosest  = -1
@@ -101,11 +103,21 @@ class ReflexAgent(Agent):
             if distance < closestGostDistance:
                 closestGostDistance = distance
                 idxGostClosest = idx
-                
-        if newGhostStates[idxGostClosest].scaredTimer <= 0 and closestGostDistance < 2:
-            return -100000
 
-        return successorGameState.getScore() + 1 / closestFoodDistance - 1 / closestGostDistance
+        if newGhostStates[idxGostClosest].scaredTimer <= 0 and closestGostDistance == 1:
+            heurictic -= 1000000
+        
+        if newGhostStates[idxGostClosest].scaredTimer != 0 and closestGostDistance == 0:
+            heurictic += 1000000
+
+
+        if action == Directions.STOP:
+            heurictic -= 10
+
+
+        foodScore = 100 if currentGameState.getNumFood() > successorGameState.getNumFood() else 0
+
+        return heurictic - closestFoodDistance + foodScore
 
 #         return successorGameState.getScore()
 
